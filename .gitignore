@@ -1,0 +1,7 @@
+selenium-server-standalone-2.38.0.jar
+phantomjsdriver.log
+tests/node_modules
+xmloutputTEST*
+jasmineTests/node_modules/jasmine-node/node_modules/gaze/node_modules/minimatch/node_modules
+jasmineTests/node_modules
+mochaTests/node_modules

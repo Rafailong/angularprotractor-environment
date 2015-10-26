@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html ng-app="CorpFolderLandingApp" ng-controller="GeneralController">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <!--[if IE]>
+    <meta http-equiv="Expires" content="-1">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="max-age=0">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>CorpFolder - {{pageTitle.title()}}</title>
+    <link rel="shortcut icon" type="favicon.ico" href="/img/icons/CorpFolderFavicon.ico">
+    <!-- Estilos -->
+    <link rel="stylesheet" type="text/css" href="css/landing.css">
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui/themes/smoothness/jquery-ui.min.css">
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' 
+    		rel='stylesheet' type='text/css'>
+</head>
+
+<body xmlns:ng="http://angularjs.org" id="ng-app">
+<div id="container">
+<div class="header ng-cloak">
+    <div class="header-inner">
+		<div class="logoBox {{pageTitle.logoBoxWider().widerClass}}" ng-hide="pageTitle.hideLogoBox()">
+			<a class="logo-link" href="#/" title="Corpfolder">
+				<h1 class="landing-titles">
+					<b>CORP</b>FOLDER
+					<span ng-show="pageTitle.subTitle().login"> > <span class="header-subsection-text">ACCEDER</span></span>
+					<span ng-show="pageTitle.subTitle().register"> > <span class="header-subsection-text">REGISTRO</span></span>
+					<span ng-show="pageTitle.subTitle().forgotPassword"> > <span class="header-subsection-text">RECUPERAR CONTRASEÑA</span></span>
+				</h1>
+			</a>
+		</div>
+
+        <div id="login" ng-controller="LoginController" ng-show="headerVisibility.login">
+            <div ng-show="processingLogin" class="landing-loader">
+				<img src='img/ajax-loader.gif'> Procesando inicio de sesión, espere un momento por favor...
+			</div>
+			
+			<div class="login-form-section" ng-hide="processingLogin">
+				<div id="login-error-section" class="error-section" ng-show="showErrorSection.errorSection">
+                    {{ data.errorMessage }}
+                    <span ng-show="sendConfirmationError">
+                        <span class="gray-text">
+                            Revise su correo con las instrucciones para confirmar su cuenta, o bien haga click
+                            <span class="contact-link" ng-click="sendConfirmation()">aquí</span> 
+							para enviarle el correo nuevamente.
+                        </span>
+                    </span>
+					<span ng-show="sendToPwdRecoveryError">
+                        <span class="gray-text">
+                             Si no recuerda su contraseña haga clic 
+                            <span class="contact-link" ng-click="showForgotPassword()">aquí</span>.
+                        </span>
+                    </span>
+				</div>
+
+                <form name="login" ng-submit="authenticateUser()">
+                    <div class="login-form-left">
+                        <label for="email">Correo Electrónico</label>
+
+                        <input id="login-email" name="email" type="email" placeholder="correo@dominio.com"
+                               ng-model="data.userName" required customize-error-messages-directive />
+                    </div>
+
+                    <div class="login-form-right">
+                        <label for="passwordField">Contraseña</label>
+
+                        <input id="login-password" name="passwordField" type="password" placeholder="contraseña"
+                               ng-model="data.password" required />
+                    </div>
+
+                    <div class="spacer20"></div>
+
+                    <div class="login-form-left">
+                        <span class="cant-access" ng-click="showForgotPassword()">
+                            ¿No puede ingresar a CorpFolder?
+                        </span>
+                    </div>
+
+                    <div class="login-form-right">
+                        <div class="right-aligned-buttons">
+                            <input type="button" class="btn-white" value="Cancelar" ng-click="showMain()" required />
+                            <input type="submit" class="btn-blue btn-blue-disabled" value="Acceder"
+									name="loginEntrar" required en-dis-btn-section="login" 
+									en-dis-btn-directive="login-email,login-password" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="register" ng-controller="RegController" ng-show="headerVisibility.register">
+            <div ng-show="processingRegister" id="register-processing">
+				<img src='img/ajax-loader.gif'> Procesando registro, espere un momento por favor...
+			</div>
+
+            <div class="register-form-section" ng-hide="registered || processingRegister">
+                <div id="register-error-section" class="error-section" ng-show="showErrorSection.errorSection">
+                    {{data.errorMsg}}
+                </div>
+
+                <form name="registration" ng-submit="registerUser()">
+                    <div class="register-form-left-section">
+                        <label for="email">Correo Electrónico</label>
+
+                        <input id="register-email" name="email" type="email" placeholder="correo@dominio.com"
+								ng-model="data.mail" required customize-error-messages-directive />
+                    </div>
+
+                    <div class="register-form-right-section">
+                        <span ng-show="!registration.email.$dirty">
+                            Se requiere un correo electrónico para validar su cuenta
+                        </span>
+
+                        <span class="form-tooltip-red" ng-show="registration.email.$dirty && registration.email.$invalid">
+                            Cuenta de correo electrónico inválida
+                        </span>
+
+                        <span class="form-tooltip-blue" ng-show="registration.email.$dirty && registration.email.$valid">
+                            Cuenta de correo electrónico válida
+                        </span>
+                    </div>
+
+                    <div class="spacer20"></div>
+
+                    <div class="register-form-left-section">
+                        <label for="password">Contraseña</label>
+
+                        <input id="register-password" name="password" type="password" placeholder="contraseña"
+								ng-model="data.pass" required />
+
+                        <div class="spacer20"></div>
+
+                        <label for="repassword">Repita su Contraseña</label>
+
+                        <input id="register-repassword" name="repassword" type="password" placeholder="repetir contraseña"
+								ng-model="data.confPass" required />
+                    </div>
+
+                    <div class="register-form-right-section">
+                        <label for="pwdInstructions">
+							Por su seguridad, validamos las siguientes condiciones en su contraseña:
+						</label>
+
+                        <ul name="pwdInstructions">
+                            <li>Mínimo 8 caracteres.</li>
+                            <li>Al menos una mayúscula y una minúscula.</li>
+                            <li>Al menos un número.</li>
+                            <li class="last-child">Ambas contraseñas deben coincidir.</li>
+                        </ul>
+                    </div>
+
+                    <div class="spacer10"></div>
+
+                    <label for="chk-terminos">
+                        <input id="chk-terminos" name="accept-terms" type="checkbox" ng-model="data.terminosCheck" required />
+
+                        <span class="accept-terms-text">
+                            Acepto los <a target="_blank" href="#/terminos">Términos y condiciones</a>
+                        </span>
+                    </label>
+
+                    <div class="spacer20"></div>
+
+                    <div class="left-aligned-buttons">
+                        <input type="submit" class="btn-blue btn-blue-disabled" value="Registrarme"
+								name="btnRegisterMe" disabled en-dis-btn-section="register" 
+								en-dis-btn-directive="register-email,register-password,register-repassword,chk-terminos" />
+
+                        <input type="button" class="btn-white" value="Cancelar" ng-click="showMain()" />
+                    </div>
+                </form>
+            </div>
+
+            <div class="registered-section" ng-show="registered">
+                <h2>GRACIAS POR REGISTRARSE COMO USUARIO DE <b>CORPFOLDER</b></h2>
+
+				<div class="spacer20"></div>
+
+				<p>
+					Un correo de confirmación de la solicitud de registro se envió a
+					<a href="#/" class="contact-link">{{data.mail}}</a>.
+
+					<br />
+
+					Siga las instrucciones para completar su registro.
+				</p>
+
+                <div class="spacer20"></div>
+
+                <input type="button" class="btn-white" value="Salir" name="btn-registered-exit" ng-click="showMain()" />
+
+                <div class="spacer20"></div>
+
+                <span class="smaller-text">
+                    Si no se recibió el correo de confirmación, por favor revise nuestra guía de ayuda en
+                    <a href="#/" class="contact-link">Contáctenos.</a>
+                </span>
+
+                <div class="spacer20"></div>
+            </div>
+        </div>
+
+        <div id="forgot-password" ng-controller="ForgotController" ng-show="headerVisibility.forgotPassword">
+            <div ng-show="processingForgot" class="landing-loader">
+				<img src='img/ajax-loader.gif'> Procesando recuperación de contraseña, espere un momento por favor...
+			</div>
+
+			<div class="forgot-password-section" ng-hide="recovered || processingForgot">
+                <form name="recuperarContrasena" ng-submit="passRecovery()">
+                    <div ng-show="showPassRecMsg">
+                        <label for="email">
+							Por favor ingrese el correo correspondiente a su cuenta y le enviaremos los pasos necesarios
+							para recuperar su contraseña.
+						</label>
+
+                        <input type="email" id="recover-email" name="email" placeholder="usuario@email.com"
+                               class="loginInput modal-input" ng-model="data.userRecover" required customize-error-messages-directive />
+
+                        <div class="spacer20"></div>
+
+                        <div class="left-aligned-buttons">
+                            <input type="submit" class="btn-recover btn-blue btn-blue-disabled"
+									value="Recuperar Contraseña" name="btnRecover" disabled 
+									en-dis-btn-directive="recover-email" en-dis-btn-section="forgot" />
+
+                            <input type="button" class="btn-white" value="Cancelar" ng-click="showMain()" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="recovered-section" ng-show="recovered">
+                <h2>USTED SOLICITÓ RECUPERAR SU CONTRASEÑA</h2>
+
+                <div class="spacer20"></div>
+
+                <p>
+					{{data.passRecMsg}}
+				</p>
+
+                <div class="spacer20"></div>
+
+                <input type="button" class="btn-white" value="Salir" name="btn-forgot-pwd-exit" ng-click="showMain()" />
+            </div>
+        </div>
+
+        <div id="login-register-section" ng-controller="MainLoginController" ng-show="headerVisibility.headerMainSection">
+            <div class="right-aligned-buttons no-margin-right">
+                <input type="button" class="btn-white" value="Acceder" ng-click="showLogin()" />
+                <input type="button" class="btn-blue" value="Regístrate" ng-click="showRegister()" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="middle-content">
+    <div class="dimElement"></div>
+
+    <div class="ng-view"></div>
+</div>
+
+<div id="footer-content">
+    <div class="dimElement"></div>
+
+    <div class="black-content">
+        <div class="left-black-content">
+            &copy; CORPFOLDER, 2013
+        </div>
+
+        <div class="right-black-content">
+            <div><a href="#/privacidad">AVISO DE PRIVACIDAD</a></div>
+            <div><a href="#/terminos">TÉRMINOS Y CONDICIONES</a></div>
+        </div>
+    </div>
+</div>
+
+</div>
+<!-- Scripts -->
+<script src="lib/jquery/jquery-1.9.1.min.js"></script>
+<script src="lib/angular/angular.min.js"></script>
+<script src="lib/angular/angular-cookies.min.js"></script>
+<script src="landingApp/js/app.js"></script>
+<script src="angularModules/corpFolderApi.js"></script>
+<script src="landingApp/js/controllers.js"></script>
+<script src="landingApp/js/services.js"></script>
+<script src="landingApp/js/directives.js"></script>
+<script src="lib/ui-bootstrap-0.6.0-custom/ui-bootstrap-custom-tpls-0.6.0.js"></script>
+</body>
+</html>
